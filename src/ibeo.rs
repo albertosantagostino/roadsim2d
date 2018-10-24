@@ -13,8 +13,9 @@ impl IbeoPublisher {
         let ros_not_available_error_msg = "roscore not started or it is not possible to connect to it";
         let ros_init_result = rosrust::try_init("roadsim2d");
         if ros_init_result.is_err() {
-            None            
+            None
         } else {
+            println!("init IbeoPublisher done");
             let ibeo_vehicle_pub = rosrust::publish("/roadsim2d/vehicle_ibeo").expect(ros_not_available_error_msg);
             let protagonist_tf_pub = rosrust::publish("/tf").expect(ros_not_available_error_msg);
             let ibeo_publisher = IbeoPublisher {
@@ -58,7 +59,6 @@ impl VehicleStatesListener for IbeoPublisher {
             object_msg.id = vehicle.id as i32;
 
             let rel_center = vehicle.pose.center - protagonist_pose.center;
-            
 
             object_msg.bounding_box.pose.x = rel_center.x;
             object_msg.bounding_box.pose.y = rel_center.y;

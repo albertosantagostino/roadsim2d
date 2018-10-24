@@ -7,7 +7,7 @@ use piston::input::{Button, Key};
 use rand::*;
 use std::boxed::Box;
 use std::collections::HashSet;
-
+#[macro_use]
 use std::time;
 
 use super::debouncer::*;
@@ -60,7 +60,8 @@ impl VehicleManager {
                 center: Point2f64 { x: 0.0, y: 0.0 },
                 yaw: 0.0,
             },
-            longitudinal_speed: 10.0,
+            //longitudinal_speed: 10.0,
+            longitudinal_speed: 0.0,
             yaw_rate: 0.0,
             bb_size: Size2f64::new(1.5, 3.0),
             color: rgb(1.0, 0.0, 1.0),
@@ -86,6 +87,25 @@ impl VehicleManager {
 
         if buttons.contains( &piston_window::Button::Keyboard(piston_window::Key::C) ) {
             self.non_playable_vehicles.clear();
+        }
+
+        if buttons.contains( &piston_window::Button::Keyboard(piston_window::Key::W) ) {
+            //self.protagonist_vehicle.longitudinal_speed += 0.1;
+            self.protagonist_vehicle.pose.center.x += 0.1*self.protagonist_vehicle.pose.yaw.cos();
+            self.protagonist_vehicle.pose.center.y += 0.1*self.protagonist_vehicle.pose.yaw.sin();
+        }
+
+        if buttons.contains( &piston_window::Button::Keyboard(piston_window::Key::S) ) {
+            self.protagonist_vehicle.pose.center.x -= 0.1*self.protagonist_vehicle.pose.yaw.cos();
+            self.protagonist_vehicle.pose.center.y -= 0.1*self.protagonist_vehicle.pose.yaw.sin();
+        }
+
+        if buttons.contains( &piston_window::Button::Keyboard(piston_window::Key::A) ) {
+            self.protagonist_vehicle.pose.yaw += 0.05;
+        }
+
+        if buttons.contains( &piston_window::Button::Keyboard(piston_window::Key::D) ) {
+            self.protagonist_vehicle.pose.yaw -= 0.05;
         }
     }
 

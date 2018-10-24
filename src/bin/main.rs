@@ -1,16 +1,19 @@
 #![feature(duration_as_u128)]
 #![feature(fn_traits)]
-#![feature(unboxed_closures)] 
+#![feature(unboxed_closures)]
+
+#[macro_use]
+extern crate rosrust; 
+#[macro_use]
+extern crate rosrust_codegen;
+
+rosmsg_include!();
+
 extern crate piston_window;
 extern crate piston;
 extern crate rand;
 extern crate euclid;
 extern crate conrod;
-extern crate rosrust;
-#[macro_use]
-extern crate rosrust_codegen;
-
-rosmsg_include!();
 
 extern crate roadsim2dlib;
 
@@ -127,7 +130,7 @@ fn main() {
                     listener.on_protagonist_state(protagonist_car);
                 }
                 if (now-previous_msg_stamp).as_secs() >= 1 {
-                    // let mut msg = msg::ibeo_msgs::ObjectListEcu::default();
+                    //let mut msg = msg::ibeo_msgs::ObjectListEcu::default();
                 }
                 previous_frame_end_timestamp = now;
             }
