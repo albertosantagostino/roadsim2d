@@ -31,13 +31,18 @@ impl VehicleManagerKeyMapping {
             piston_window::Key,
             Box<Debouncer<VehicleManager>>,
         > = HashMap::new();
-        let debouncer: Debouncer<VehicleManager> =
+        let debouncer_k: Debouncer<VehicleManager> =
             Debouncer::from_millis(200, |mgr: &mut VehicleManager| {
                 mgr.spawn_random_close_to_protagonist();
             });
-        let debouncer_box = Box::new(debouncer);
-        key_action_map.insert(piston_window::Key::K, debouncer_box);
-
+        let debouncer_space: Debouncer<VehicleManager> =
+            Debouncer::from_millis(200, |mgr: &mut VehicleManager| {
+                mgr.toggle_cars_movement();
+            });
+        let debouncer_k_box = Box::new(debouncer_k);
+        let debouncer_space_box = Box::new(debouncer_space);
+        key_action_map.insert(piston_window::Key::K, debouncer_k_box);
+        key_action_map.insert(piston_window::Key::Space, debouncer_space_box);
         VehicleManagerKeyMapping {
             key_action_map: key_action_map
         }
@@ -107,6 +112,11 @@ impl VehicleManager {
         if buttons.contains( &piston_window::Button::Keyboard(piston_window::Key::D) ) {
             self.protagonist_vehicle.pose.yaw -= 0.05;
         }
+
+        if buttons.contains( &piston_window::Button::Keyboard(piston_window::Key::Space) ) {
+            let action = vehicle_manager_key_mappings.key_action_map.get_mut(&piston_window::Key::Space);
+            action.unwrap().debounce(self);
+        }
     }
 
     pub fn set_protagonist_speed(speed: f64, yawrate: f64) {
@@ -131,6 +141,19 @@ impl VehicleManager {
 
         self.non_playable_vehicles.push(new_car);
         self.last_spawn_time = time::Instant::now();
+    }
+
+    pub fn toggle_cars_movement(&mut self) {
+            for car in &mut self.non_playable_vehicles {
+                if car.longitudinal_speed > 0.0 {
+                    car.longitudinal_speed = 0.0;
+                    car.yaw_rate = 0.0
+                }
+                else {
+                    car.longitudinal_speed = 10.0; 
+                    car.yaw_rate = 0.01;
+                }
+            }
     }
 
     pub fn update(&mut self, dt_s: f32) {
